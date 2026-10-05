@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>AI MODELS - Job Card Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI Models">
+<link rel="preconnect" href="https://googleapis.com">
+<link rel="preconnect" href="https://gstatic.com" crossorigin>
+<link href="https://googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#E4E6E8; --surface:#FFFFFF; --ink:#1D2125; --muted:#5E666E; --line:#CBD0D5;
+    --plate:#F7D117; --plate-ink:#111; --accent:#1D2125; --accent-ink:#fff; --danger:#B3261E; --ok:#1E7B46;
+    --sans:'Barlow', system-ui, -apple-system, sans-serif;
+    --cond:'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme:dark) {
+    :root {
+      --bg:#16181B; --surface:#22262A; --ink:#EEF0F2; --muted:#9AA3AB; --line:#3A4046;
+      --accent:#F7D117; --accent-ink:#111; --danger:#FF8A80; --ok:#6FD39A;
+    }
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 17px; margin: 0; padding: 0; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 16px 14px 100px; }
+  .app-header { text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--line); }
+  .app-header h1 { font-family: var(--cond); font-size: 32px; margin: 0; color: var(--ink); letter-spacing: 1px; }
+  .app-header p { font-size: 11px; color: var(--muted); font-weight: 600; margin: 4px 0 0 0; letter-spacing: 1px; }
+  h2 { font: 700 22px var(--cond); margin: 0 0 10px; letter-spacing: .2px; text-transform: uppercase; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+  .lbl { display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 5px; }
+  input, select { width: 100%; font: 500 18px var(--sans); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; appearance: none; -webkit-appearance: none; }
+  .plateRow { display: flex; gap: 10px; align-items: stretch; }
+  .plate { flex: 1; display: flex; background: var(--plate); border: 2px solid #111; border-radius: 10px; overflow: hidden; min-height: 64px; }
+  .plate .gb { width: 26px; background: #0B3A9E; color: #fff; font: 700 11px var(--sans); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 7px; }
+  .plate input { border: 0; background: transparent; color: var(--plate-ink); font: 700 34px var(--cond); text-transform: uppercase; letter-spacing: 2px; text-align: center; padding: 0 6px; width: 100%; }
+  .row { display: flex; gap: 10px; margin-top: 12px; }
+  .row > * { flex: 1; min-width: 0; }
+  .seg { display: flex; gap: 6px; margin-top: 6px; }
+  .seg button { flex: 1; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: 600 16px var(--sans); padding: 12px 6px; border-radius: 10px; cursor: pointer; }
+  .seg button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .metrics-grid { display: flex; gap: 10px; margin-top: 8px; }
+  .stat-card { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--line); text-align: center; }
+  .stat-card.paid { border-color: var(--ok); background: rgba(30, 123, 70, 0.05); color: var(--ok); }
+  .stat-card.unpaid { border-color: var(--danger); background: rgba(179, 38, 30, 0.05); color: var(--danger); }
+  .stat-value { font-family: var(--cond); font-size: 24px; font-weight: 700; margin-top: 4px; }
+  .chart-container { display: flex; align-items: flex-end; justify-content: space-around; height: 120px; padding-top: 20px; border-bottom: 2px solid var(--line); margin-bottom: 8px; }
+  .chart-bar-wrap { display: flex; flex-direction: column; align-items: center; width: 12%; }
+  .chart-bar { width: 100%; background: var(--line); border-radius: 4px 4px 0 0; min-height: 5px; transition: height 0.3s ease; }
+  .chart-bar.highlight { background: var(--ink); }
+  .chart-label { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+  .submit-btn { width: 100%; background: var(--ink); color: var(--bg); border: none; font: 700 18px var(--cond); padding: 14px; border-radius: 10px; margin-top: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ledger { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 8px; }
+  .ledger th { font: 600 13px var(--sans); color: var(--muted); text-align: left; padding: 4px 3px; border-bottom: 1.5px solid var(--line); }
+  .ledger td { padding: 10px 3px; border-bottom: 1px solid var(--line); }
+  .plt-tag { background: var(--plate); color: #111; font: 700 15px var(--cond); padding: 2px 6px; border-radius: 4px; border: 1px solid #111; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-header">
+    <h1>AI MODELS</h1>
+    <p>TYRES • MOT • SERVICING • REPAIRS</p>
+  </header>
+  <section class="card">
+    <h2>Sales Analytics</h2>
+    <div class="metrics-grid">
+      <div class="stat-card paid"><span class="lbl" style="color:inherit">Total Sales</span><div class="stat-value" id="totalPaidSales">£320.00</div></div>
+      <div class="stat-card unpaid"><span class="lbl" style="color:inherit">Unpaid Tabs</span><div class="stat-value">£0.00</div></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-bar-wrap"><div class="chart-bar" style="height: 40%"></div><span class="chart-label">1/10</span></div>
+      <div class="chart-bar-wrap"><div class="chart-bar" style="height: 65%"></div><span class="chart-label">2/10</span></div>
+      <div class="chart-bar-wrap"><div class="chart-bar" style="height: 30%"></div><span class="chart-label">3/10</span></div>
+      <div class="chart-bar-wrap"><div class="chart-bar" style="height: 85%"></div><span class="chart-label">4/10</span></div>
+      <div class="chart-bar-wrap"><div class="chart-bar highlight" id="todayBar" style="height: 25%"></div><span class="chart-label">Today</span></div>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Customer</h2>
+    <div><span class="lbl">Customer Name</span><input type="text" id="custName" value="Ahmed Hassan"></div>
+    <div style="margin-top: 12px;"><span class="lbl">Phone Number</span><input type="text" id="custPhone" value="07912 345678"></div>
+  </section>
+  <section class="card">
+    <h2>Vehicle Info</h2>
+    <span class="lbl">Registration Number</span>
+    <div class="plateRow"><div class="plate"><div class="gb">GB</div><input type="text" id="vrmInput" value="AX18 KZP"></div></div>
+    <div class="row">
+      <div><span class="lbl">Make</span><input type="text" id="vMake" value="BMW"></div>
+      <div><span class="lbl">Model</span><input type="text" id="vModel" value="320d"></div>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Work Details</h2>
+    <span class="lbl">Tyre Configuration</span>
+    <div class="row" style="margin-top: 4px;">
+      <select id="tWidth"><option>225</option><option>205</option></select>
+      <select id="tProfile"><option>45</option><option>55</option></select>
+      <select id="tRim"><option>R17</option><option>R16</option></select>
+    </div>
+    <div class="row">
+      <div><span class="lbl">Quantity</span><input type="number" id="tQty" value="4"></div>
+      <div><span class="lbl">Brand Preferred</span><input type="text" id="tBrand" value="Michelin"></div>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Payment Method</h2>
+    <div class="seg" id="paySeg"><button class="active">Cash</button><button>Card</button><button>Transfer</button></div>
+  </section>
+  <button class="submit-btn" onclick="logJobToTable()">Commit Job Card</button>
+  <section class="card">
+    <h2>Active Workspace Ledger</h2>
+    <table class="ledger" id="ledgerTable">
+      <thead><tr><th>Plate</th><th>Description</th><th style="text-align: right;">Total</th></tr></thead>
+      <tbody><tr><td><span class="plt-tag">AX18 KZP</span></td><td>4 × 225/45R17 Michelin</td><td style="text-align: right; font-weight: 700;">£320.00</td></tr></tbody>
+    </table>
+  </section>
+</div>
+<script>
+  let grandTotalSales = 320.00;
+  document.querySelectorAll('#paySeg button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#paySeg button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  function logJobToTable() {
+    const vrm = document.getElementById('vrmInput').value.trim().toUpperCase();
+    const qty = document.getElementById('tQty').value;
+    const size = document.getElementById('tWidth').value + '/' + document.getElementById('tProfile').value + document.getElementById('tRim').value;
+    const brand = document.getElementById('tBrand').value;
+    if(!vrm) { alert('Please verify VRM plate identity string.'); return; }
+    const cost = qty * 80;
+    grandTotalSales += cost;
+    document.getElementById('totalPaidSales').textContent = '£' + grandTotalSales.toFixed(2);
+    let nextHeight = Math.min(100, 25 + (grandTotalSales / 20));
+    document.getElementById('todayBar').style.height = nextHeight + '%';
+    const tbody = document.querySelector('#ledgerTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `<td><span class="plt-tag">${vrm}</span></td><td>${qty} × ${size} ${brand}</td><td style="text-align: right; font-weight: 700;">£${cost.toFixed(2)}</td>`;
+    tbody.insertBefore(row, tbody.firstChild);
+  }
+</script>
+</body>
+</html>
